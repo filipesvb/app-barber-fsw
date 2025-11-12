@@ -3,8 +3,18 @@ import Header from "./_components/header";
 import SearchInput from "./_components/search-input";
 import banner from "../public/banner.png";
 import BookingItem from "./_components/booking-item";
+import { prisma } from "../lib/prisma";
+import BarbershopItem from "./_components/barbershop-item";
 
-export default function Home() {
+export default async function Home() {
+  const recommendedBarbershops = await prisma.barbershop.findMany({
+    orderBy: { name: "asc" },
+  });
+
+  const popularBarbershops = await prisma.barbershop.findMany({
+    orderBy: { name: "desc" },
+  });
+
   return (
     <main>
       <Header />
@@ -25,6 +35,25 @@ export default function Home() {
           date={new Date()}
           serviceName="Corte de barba"
         />
+        <h2 className="text-foreground text-xs font-semibold uppercase">
+          Recomendados
+        </h2>
+        <div className="flex gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+          {recommendedBarbershops.map((barbershop) => (
+            <BarbershopItem barbershop={barbershop} key={barbershop.id} />
+          ))}
+        </div>
+        <h2 className="text-foreground text-xs font-semibold uppercase">
+          Populares
+        </h2>
+        <div className="flex gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+          {popularBarbershops.map((barbershop) => (
+            <BarbershopItem barbershop={barbershop} key={barbershop.id} />
+          ))}
+        </div>
+
+        {/* Development only */}
+        <div className="mt-50"></div>
       </div>
     </main>
   );
