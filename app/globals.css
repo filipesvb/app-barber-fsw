@@ -4,7 +4,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@layer base {
+  html {
+    font-family: var(--font-plus-jakarta-sans), sans-serif;
+  }
+}
+
 :root {
+  --font-plus-jakarta-sans: "Plus Jakarta Sans", sans-serif;
   --background: oklch(0.994 0 0);
   --foreground: oklch(0.2178 0 0);
   --card: oklch(1 0 0);
