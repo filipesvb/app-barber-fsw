@@ -15,6 +15,8 @@ import { Avatar, AvatarImage } from "@/app/_components/ui/avatar";
 import ServiceItem from "@/app/_components/service-item";
 import { PhoneItem } from "@/app/_components/phone-item";
 import Divider from "@/app/_components/Divider";
+import MenuButton from "@/app/_components/ui/menu-button";
+import { Button } from "@/app/_components/ui/button";
 
 export default async function Page(props: PageProps<"/barbershops/[id]">) {
   const { id } = await props.params;
@@ -42,13 +44,14 @@ export default async function Page(props: PageProps<"/barbershops/[id]">) {
         />
 
         {/* Botão redondo flutuante no canto superior esquerdo que volta para a home */}
-        <Link
-          href="/"
-          aria-label="Voltar"
-          className="absolute top-4 left-4 z-30 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md ring-1 ring-black/5 transition-transform hover:scale-105 dark:bg-black/60"
-        >
-          <LucideArrowLeft />
-        </Link>
+        <div className="absolute top-4 left-0 z-30 flex w-full items-center justify-between px-4">
+          <Button asChild size={"icon"} variant={"outline"}>
+            <Link href="/" aria-label="Voltar">
+              <LucideArrowLeft />
+            </Link>
+          </Button>
+          <MenuButton />
+        </div>
       </div>
 
       <div className="relative top-[-20] space-y-4 rounded-t-3xl bg-white py-5">

@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { LogInIcon, LogOutIcon, MenuIcon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { getAuthUrl } from "@/lib/get-auth-url";
+import MenuButton from "./ui/menu-button";
 
 const Header = () => {
   const { data: session } = authClient.useSession();
@@ -36,9 +37,7 @@ const Header = () => {
             <LogInIcon />
           </Button>
         )}
-        <Button variant={"outline"} size={"icon"}>
-          <MenuIcon />
-        </Button>
+        <MenuButton />
       </div>
     </header>
   );
