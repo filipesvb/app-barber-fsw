@@ -37,6 +37,8 @@ export default async function Page(props: PageProps<"/barbershops/[id]">) {
           alt={barbershop.name}
           fill
           className="h-full w-full object-cover"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          loading="eager"
         />
 
         {/* Botão redondo flutuante no canto superior esquerdo que volta para a home */}

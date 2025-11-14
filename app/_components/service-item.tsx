@@ -19,10 +19,16 @@ const ServiceItem = ({ s }: ServiceItemProps) => {
       className="border-border flex w-full max-w-[500px] flex-row gap-2 rounded-lg border p-2 shadow-sm"
     >
       <div className="relative size-[110px] shrink-0 overflow-hidden rounded-[10px]">
-        <Image src={s.imageUrl} alt={s.name} fill className="object-cover" />
+        <Image
+          src={s.imageUrl}
+          alt={s.name}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        />
       </div>
 
-      <div className="flex flex-col justify-between">
+      <div className="flex w-full flex-col justify-between">
         <div>
           <h3 className="text-foreground font-semibold">{s.name}</h3>
           <CardDescription>{s.description}</CardDescription>
