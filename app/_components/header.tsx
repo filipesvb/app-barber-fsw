@@ -6,6 +6,14 @@ import { LogInIcon, LogOutIcon, MenuIcon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { getAuthUrl } from "@/lib/get-auth-url";
 import MenuButton from "./ui/menu-button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
+import Divider from "./Divider";
 
 const Header = () => {
   const { data: session } = authClient.useSession();
@@ -37,7 +45,42 @@ const Header = () => {
             <LogInIcon />
           </Button>
         )}
-        <MenuButton />
+
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant={"outline"} size={"icon"}>
+              <MenuIcon />
+            </Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader className="space-y-3">
+              <SheetTitle>Menu</SheetTitle>
+              <Divider />
+            </SheetHeader>
+
+            <div>
+              {session?.user ? (
+                <div className="flex text-right">
+                  <Button
+                    variant={"outline"}
+                    size={"icon"}
+                    onClick={handleLogout}
+                  >
+                    <LogOutIcon />
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={handleLogin}
+                  className="flex items-center gap-3 rounded-full px-10 py-6"
+                >
+                  <span>Login</span>
+                  <LogInIcon />
+                </Button>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </header>
   );

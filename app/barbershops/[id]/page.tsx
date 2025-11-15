@@ -1,16 +1,10 @@
 import Image from "next/image";
 import Footer from "../../_components/footer";
-import {
-  PageContainer,
-  PageSection,
-  PageSectionTitle,
-} from "../../_components/ui/page";
+import { PageSection, PageSectionTitle } from "../../_components/ui/page";
 import { prisma } from "../../../lib/prisma";
-import CopyButton from "../../_components/ui/copy-button";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { LucideArrowLeft, MapPinIcon } from "lucide-react";
-import { Separator } from "@/app/_components/ui/separator";
+import { LucideArrowLeft } from "lucide-react";
 import { Avatar, AvatarImage } from "@/app/_components/ui/avatar";
 import ServiceItem from "@/app/_components/service-item";
 import { PhoneItem } from "@/app/_components/phone-item";
