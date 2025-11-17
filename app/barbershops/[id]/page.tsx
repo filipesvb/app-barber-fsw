@@ -108,7 +108,6 @@ export default async function Page(props: PageProps<"/barbershops/[id]">) {
           </div>
         </div>
       </div>
-      <Footer />
     </main>
   );
 }

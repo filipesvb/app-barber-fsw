@@ -1,11 +1,10 @@
 import Image from "next/image";
 import Header from "./_components/header";
-import SearchInput from "./_components/search-input";
+import Search from "./_components/search-input";
 import banner from "../public/banner.png";
 import BookingItem from "./_components/booking-item";
 import { prisma } from "../lib/prisma";
 import BarbershopItem from "./_components/barbershop-item";
-import Footer from "./_components/footer";
 import {
   PageContainer,
   PageSection,
@@ -26,7 +25,7 @@ export default async function Home() {
     <main>
       <Header />
       <PageContainer>
-        <SearchInput />
+        <Search />
         <Image
           src={banner}
           alt="Agende agora!"
@@ -62,7 +61,6 @@ export default async function Home() {
           </PageSectionScroller>
         </PageSection>
       </PageContainer>
-      <Footer />
     </main>
   );
 }
