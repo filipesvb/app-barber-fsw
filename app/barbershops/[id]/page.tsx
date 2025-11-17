@@ -9,7 +9,7 @@ import { Avatar, AvatarImage } from "@/app/_components/ui/avatar";
 import ServiceItem from "@/app/_components/service-item";
 import { PhoneItem } from "@/app/_components/phone-item";
 import Divider from "@/app/_components/Divider";
-import MenuButton from "@/app/_components/ui/menu-button";
+import SidebarButton from "@/app/_components/sidebar-button";
 import { Button } from "@/app/_components/ui/button";
 
 export default async function Page(props: PageProps<"/barbershops/[id]">) {
@@ -44,7 +44,7 @@ export default async function Page(props: PageProps<"/barbershops/[id]">) {
               <LucideArrowLeft />
             </Link>
           </Button>
-          <MenuButton />
+          <SidebarButton />
         </div>
       </div>
 
