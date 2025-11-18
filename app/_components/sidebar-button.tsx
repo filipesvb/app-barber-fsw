@@ -115,20 +115,21 @@ const SidebarButton = () => {
 
         <div className="px-0">
           {categorias.map((categoria) => (
-            <Button
-              key={categoria.title}
-              asChild
-              variant={"ghost"}
-              size={"lg"}
-              className="flex w-full justify-start"
-            >
-              <Link
-                href={`/${categoria.title.toLowerCase()}`}
-                className="px-3!"
+            <SheetClose key={categoria.title} asChild>
+              <Button
+                asChild
+                variant={"ghost"}
+                size={"lg"}
+                className="flex w-full justify-start"
               >
-                {categoria.title}
-              </Link>
-            </Button>
+                <Link
+                  href={`/barbershops?service=${categoria.title.toLowerCase()}`}
+                  className="px-3!"
+                >
+                  {categoria.title}
+                </Link>
+              </Button>
+            </SheetClose>
           ))}
         </div>
 

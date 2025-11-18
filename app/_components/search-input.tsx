@@ -9,21 +9,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Field, FieldError, FieldGroup } from "./ui/field";
 
 const formSchema = z.object({
-  search: z.string().trim().min(1, "Digite algo para pesquisar"),
+  title: z.string().trim().min(1, "Digite algo para pesquisar"),
 });
 
 const Search = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      search: "",
+      title: "",
     },
   });
 
   const router = useRouter();
 
   const handleSubmit = (data: z.infer<typeof formSchema>) => {
-    router.push(`/barbershops?search=${data.search}`);
+    router.push(`/barbershops?title=${data.title}`);
   };
 
   return (
@@ -33,13 +33,13 @@ const Search = () => {
     >
       <FieldGroup className="">
         <Controller
-          name="search"
+          name="title"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field>
               <Input
                 {...field}
-                placeholder="Faça sua busca"
+                placeholder="Procure por uma barbearia"
                 autoComplete="off"
                 className="rounded-full border border-gray-300"
               />
