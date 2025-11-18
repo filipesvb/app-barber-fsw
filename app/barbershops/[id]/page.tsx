@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Footer from "../../_components/footer";
 import { PageSection, PageSectionTitle } from "../../_components/ui/page";
 import { prisma } from "../../../lib/prisma";
 import { notFound } from "next/navigation";
@@ -90,7 +89,7 @@ export default async function Page(props: PageProps<"/barbershops/[id]">) {
           <PageSectionTitle>Serviços</PageSectionTitle>
           <div className="flex flex-col items-center gap-3">
             {barbershop.services.map((s) => (
-              <ServiceItem key={s.id} s={s} />
+              <ServiceItem key={s.id} s={s} barbershop={barbershop} />
             ))}
           </div>
         </div>

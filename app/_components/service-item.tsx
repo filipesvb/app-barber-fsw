@@ -1,18 +1,44 @@
+"use client";
+
 import Image from "next/image";
 import { Button } from "./ui/button";
-import { CardDescription, CardTitle } from "./ui/card";
+import { Card, CardContent, CardDescription } from "./ui/card";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
+import { Calendar } from "./ui/calendar";
+import { ptBR } from "date-fns/locale";
+import { useState } from "react";
+import { format } from "date-fns";
+import { Barbershop, BarbershopService } from "../generated/prisma/client";
+
+const horarios = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00"];
 
 interface ServiceItemProps {
-  s: {
-    id: string;
-    name: string;
-    description: string;
-    priceInCents: number;
-    imageUrl: string;
-  };
+  s: BarbershopService;
+  barbershop: Pick<Barbershop, "name">;
 }
 
-const ServiceItem = ({ s }: ServiceItemProps) => {
+const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedTime, setSelectedTime] = useState<string | undefined>(
+    undefined,
+  );
+
+  const handleSelectDate = (date: Date | undefined) => {
+    setSelectedDate(date);
+  };
+
+  const handleSelectTime = (time: string | undefined) => {
+    setSelectedTime(time);
+  };
+
   return (
     <div
       key={s.id}
@@ -41,9 +67,106 @@ const ServiceItem = ({ s }: ServiceItemProps) => {
                 currency: "BRL",
               })}
             </span>
-            <Button variant="default" size="sm">
-              Agendar
-            </Button>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="default" size="sm">
+                  Agendar
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="gap-0 px-0">
+                <SheetHeader>
+                  <SheetTitle>Agendar {s.name}</SheetTitle>
+                </SheetHeader>
+
+                <div className="my-0 flex w-full justify-center">
+                  <Calendar
+                    selected={selectedDate}
+                    onSelect={handleSelectDate}
+                    className="border-b border-solid [--cell-size:--spacing(9)] md:[--cell-size:--spacing(12)]"
+                    mode="single"
+                    locale={ptBR}
+                    navLayout="after"
+                  />
+                </div>
+                {selectedDate && (
+                  <div className="flex gap-2 overflow-x-auto p-4 [&::-webkit-scrollbar]:hidden">
+                    {horarios.map((horario) => (
+                      <Button
+                        key={horario}
+                        variant={
+                          selectedTime === horario ? "default" : "outline"
+                        }
+                        className="rounded-full"
+                        style={
+                          selectedTime === horario
+                            ? { border: "1px solid transparent" }
+                            : {}
+                        }
+                        onClick={() => handleSelectTime(horario)}
+                      >
+                        {horario}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+
+                {selectedDate && selectedTime && (
+                  <div className="p-4">
+                    <Card className="py-3">
+                      <CardContent className="space-y-2 px-3">
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-md text-foreground font-bold">
+                            {s.name}
+                          </h2>
+                          <p className="text-md text-foreground font-bold">
+                            {Intl.NumberFormat("pt-BR", {
+                              style: "currency",
+                              currency: "BRL",
+                            }).format(s.priceInCents / 100)}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-muted-foreground text-sm font-bold">
+                            Data
+                          </h2>
+                          <p className="text-muted-foreground text-sm font-bold">
+                            {format(selectedDate, "dd 'de' MMMM", {
+                              locale: ptBR,
+                            })}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-muted-foreground text-sm font-bold">
+                            Horário
+                          </h2>
+                          <p className="text-muted-foreground text-sm font-bold">
+                            {selectedTime}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-muted-foreground text-sm font-bold">
+                            Barbearia
+                          </h2>
+                          <p className="text-muted-foreground text-sm font-bold">
+                            {barbershop.name}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
+                {selectedDate && selectedTime && (
+                  <SheetFooter>
+                    <SheetClose asChild>
+                      <Button>Confirmar</Button>
+                    </SheetClose>
+                  </SheetFooter>
+                )}
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
