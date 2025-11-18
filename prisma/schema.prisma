@@ -31,16 +31,20 @@ model BarbershopService {
   imageUrl     String
   barbershopId String
   barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
+  
+  bookings     Booking[]
   priceInCents Int
 }
 
 model Booking {
-  id           String    @id @default(uuid())
-  serviceId    String
-  barbershopId String
-  date         DateTime  @db.Timestamptz
-  canceled     Boolean?  @default(false)
-  canceledAt   DateTime? @db.Timestamptz
+  id        String            @id @default(uuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id])
+  serviceId String
+  service   BarbershopService @relation(fields: [serviceId], references: [id])
+  date      DateTime
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
 }
 
 model User {
@@ -51,6 +55,7 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
+  bookings      Booking[]
   sessions      Session[]
   accounts      Account[]
 

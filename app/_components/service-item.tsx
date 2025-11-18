@@ -15,8 +15,11 @@ import {
 import { Calendar } from "./ui/calendar";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { Barbershop, BarbershopService } from "../generated/prisma/client";
+import CreateBooking from "../_actions/create-booking";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 const horarios = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00"];
 
@@ -37,6 +40,33 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
 
   const handleSelectTime = (time: string | undefined) => {
     setSelectedTime(time);
+  };
+
+  const { data: session } = authClient.useSession();
+
+  const handleCreateBooking = async () => {
+    if (!selectedDate || !selectedTime) return;
+    const hours = Number(selectedTime.split(":")[0]);
+    const minutes = Number(selectedTime.split(":")[1]);
+
+    const newDate = set(selectedDate, {
+      hours: hours,
+      minutes: minutes,
+    });
+
+    if (typeof session?.user.id != "string") return;
+
+    try {
+      await CreateBooking({
+        serviceId: s.id,
+        userId: session?.user.id,
+        date: newDate,
+      });
+      toast.success("Booking criado com sucesso");
+    } catch (e: unknown) {
+      console.error(e);
+      toast.error("Erro ao criar booking");
+    }
   };
 
   return (
@@ -161,7 +191,7 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
                 {selectedDate && selectedTime && (
                   <SheetFooter>
                     <SheetClose asChild>
-                      <Button>Confirmar</Button>
+                      <Button onClick={handleCreateBooking}>Confirmar</Button>
                     </SheetClose>
                   </SheetFooter>
                 )}
