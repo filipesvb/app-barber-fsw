@@ -14,14 +14,38 @@ import {
 } from "./ui/sheet";
 import { Calendar } from "./ui/calendar";
 import { ptBR } from "date-fns/locale";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format, set } from "date-fns";
-import { Barbershop, BarbershopService } from "../generated/prisma/client";
+import {
+  Barbershop,
+  BarbershopService,
+  Booking,
+} from "../generated/prisma/client";
 import CreateBooking from "../_actions/create-booking";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import GetBookings from "../_actions/get-bookings";
 
-const horarios = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00"];
+const HORARIOS = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00"];
+
+const getHorariosLivres = (bookings: Booking[]) => {
+  return HORARIOS.filter((horario) => {
+    const hours = Number(horario.split(":")[0]);
+    const minutes = Number(horario.split(":")[1]);
+
+    const timeAlreadyHasBooking = bookings.some(
+      (booking) =>
+        new Date(booking.date).getHours() === hours &&
+        new Date(booking.date).getMinutes() === minutes,
+    );
+
+    if (timeAlreadyHasBooking) {
+      return false;
+    }
+
+    return true;
+  });
+};
 
 interface ServiceItemProps {
   s: BarbershopService;
@@ -33,6 +57,37 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
   const [selectedTime, setSelectedTime] = useState<string | undefined>(
     undefined,
   );
+  const [dayBookings, setDayBookings] = useState<Booking[]>([]);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      if (!selectedDate) return;
+      if (process.env.NEXT_PUBLIC_IS_CODESPACES === "true") {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_CODESPACE_URL}/api/bookings`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              date: selectedDate,
+              serviceId: s.id,
+            }),
+          },
+        );
+
+        const bookings = await res.json();
+        console.log(bookings);
+        setDayBookings(bookings);
+      } else {
+        const bookings = await GetBookings({
+          date: selectedDate,
+          serviceId: s.id,
+        });
+        setDayBookings(bookings);
+      }
+    };
+    fetchBookings();
+  }, [s.id, selectedDate]);
 
   const handleSelectDate = (date: Date | undefined) => {
     setSelectedDate(date);
@@ -54,14 +109,34 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
       minutes: minutes,
     });
 
-    if (typeof session?.user.id != "string") return;
+    if (typeof session?.user.id != "string") {
+      toast.error("Você deve se autenticar primeiro");
+      return;
+    }
 
     try {
-      await CreateBooking({
-        serviceId: s.id,
-        userId: session?.user.id,
-        date: newDate,
-      });
+      if (process.env.NEXT_PUBLIC_IS_CODESPACES === "true") {
+        console.log("SELECTED_DATE:::::::::::::", selectedDate);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_CODESPACE_URL}/api/createbooking`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              date: newDate,
+              serviceId: s.id,
+              userId: session?.user.id,
+            }),
+          },
+        );
+        console.log(res.json());
+      } else {
+        await CreateBooking({
+          serviceId: s.id,
+          userId: session?.user.id,
+          date: newDate,
+        });
+      }
       toast.success("Booking criado com sucesso");
     } catch (e: unknown) {
       console.error(e);
@@ -120,7 +195,7 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
                 </div>
                 {selectedDate && (
                   <div className="flex gap-2 overflow-x-auto p-4 [&::-webkit-scrollbar]:hidden">
-                    {horarios.map((horario) => (
+                    {getHorariosLivres(dayBookings).map((horario) => (
                       <Button
                         key={horario}
                         variant={

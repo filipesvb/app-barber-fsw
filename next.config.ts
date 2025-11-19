@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    serverActions: {
+      allowedOrigins: ["*.app.github.dev"],
+    },
+  },
 };
 
 export default nextConfig;
