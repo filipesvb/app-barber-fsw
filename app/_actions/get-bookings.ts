@@ -11,9 +11,12 @@ interface GetBookingsProps {
 const GetBookings = async ({ serviceId, date }: GetBookingsProps) => {
   return prisma.booking.findMany({
     where: {
-      date: {
-        lte: endOfDay(date),
-        gte: startOfDay(date),
+      AND: {
+        date: {
+          lte: endOfDay(date),
+          gte: startOfDay(date),
+        },
+        serviceId: serviceId,
       },
     },
   });

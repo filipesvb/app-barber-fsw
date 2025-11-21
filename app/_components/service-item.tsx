@@ -97,6 +97,11 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
     setSelectedTime(time);
   };
 
+  const resetDateAndTime = () => {
+    setSelectedDate(undefined);
+    setSelectedTime(undefined);
+  };
+
   const { data: session } = authClient.useSession();
 
   const handleCreateBooking = async () => {
@@ -137,6 +142,8 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
           date: newDate,
         });
       }
+      setSelectedDate(undefined);
+      setSelectedTime(undefined);
       toast.success("Booking criado com sucesso");
     } catch (e: unknown) {
       console.error(e);
@@ -172,7 +179,7 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
                 currency: "BRL",
               })}
             </span>
-            <Sheet>
+            <Sheet onOpenChange={resetDateAndTime}>
               <SheetTrigger asChild>
                 <Button variant="default" size="sm">
                   Agendar
