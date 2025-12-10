@@ -14,7 +14,7 @@ import {
 } from "./ui/sheet";
 import { Calendar } from "./ui/calendar";
 import { ptBR } from "date-fns/locale";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { format, set } from "date-fns";
 import {
   Barbershop,
@@ -25,6 +25,8 @@ import CreateBooking from "../_actions/create-booking";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import GetBookings from "../_actions/get-bookings";
+import { Skeleton } from "./ui/skeleton";
+import BookingsAvailableSkeleton from "./ui/bookings-available-skeleton";
 
 const HORARIOS = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00"];
 
@@ -57,33 +59,42 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
   const [selectedTime, setSelectedTime] = useState<string | undefined>(
     undefined,
   );
+  const [loadingBookingsAvailable, setLoadingBookingsAvailable] =
+    useState(false);
   const [dayBookings, setDayBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
     const fetchBookings = async () => {
       if (!selectedDate) return;
-      if (process.env.NEXT_PUBLIC_IS_CODESPACES === "true") {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_CODESPACE_URL}/api/bookings`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              date: selectedDate,
-              serviceId: s.id,
-            }),
-          },
-        );
+      setLoadingBookingsAvailable(true);
+      try {
+        if (process.env.NEXT_PUBLIC_IS_CODESPACES === "true") {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_CODESPACE_URL}/api/bookings`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                date: selectedDate,
+                serviceId: s.id,
+              }),
+            },
+          );
 
-        const bookings = await res.json();
-        console.log(bookings);
-        setDayBookings(bookings);
-      } else {
-        const bookings = await GetBookings({
-          date: selectedDate,
-          serviceId: s.id,
-        });
-        setDayBookings(bookings);
+          const bookings = await res.json();
+          console.log(bookings);
+          setDayBookings(bookings);
+        } else {
+          const bookings = await GetBookings({
+            date: selectedDate,
+            serviceId: s.id,
+          });
+          setDayBookings(bookings);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoadingBookingsAvailable(false);
       }
     };
     fetchBookings();
@@ -198,27 +209,33 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
                     mode="single"
                     locale={ptBR}
                     navLayout="after"
+                    disabled={{ before: new Date() }}
                   />
                 </div>
+
                 {selectedDate && (
                   <div className="flex gap-2 overflow-x-auto p-4 [&::-webkit-scrollbar]:hidden">
-                    {getHorariosLivres(dayBookings).map((horario) => (
-                      <Button
-                        key={horario}
-                        variant={
-                          selectedTime === horario ? "default" : "outline"
-                        }
-                        className="rounded-full"
-                        style={
-                          selectedTime === horario
-                            ? { border: "1px solid transparent" }
-                            : {}
-                        }
-                        onClick={() => handleSelectTime(horario)}
-                      >
-                        {horario}
-                      </Button>
-                    ))}
+                    {loadingBookingsAvailable ? (
+                      <BookingsAvailableSkeleton />
+                    ) : (
+                      getHorariosLivres(dayBookings).map((horario) => (
+                        <Button
+                          key={horario}
+                          variant={
+                            selectedTime === horario ? "default" : "outline"
+                          }
+                          className="min-w-20 rounded-full"
+                          style={
+                            selectedTime === horario
+                              ? { border: "1px solid transparent" }
+                              : {}
+                          }
+                          onClick={() => handleSelectTime(horario)}
+                        >
+                          {horario}
+                        </Button>
+                      ))
+                    )}
                   </div>
                 )}
 

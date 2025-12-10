@@ -12,8 +12,6 @@ export async function POST(req: Request) {
     const { serviceId, date, userId }: CreateBookingParams = await req.json();
     const parsedDate = new Date(date);
 
-    console.log(date);
-
     const newBooking = await prisma.booking.create({
       data: {
         date: date,
