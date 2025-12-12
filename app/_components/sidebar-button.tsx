@@ -22,11 +22,14 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { getAuthUrl } from "@/lib/get-auth-url";
 import Link from "next/link";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
+import Image from "next/image";
+import LoginModal from "./login-modal";
 
 const SidebarButton = () => {
   const { data: session } = authClient.useSession();
 
-  const handleLogin = () => {
+  const handleGoogleLogin = () => {
     authClient.signIn.social({
       provider: "google",
       callbackURL: getAuthUrl(),
@@ -78,14 +81,16 @@ const SidebarButton = () => {
           ) : (
             <div className="flex items-center justify-between gap-3 px-3">
               <span>Olá, faça seu login</span>
-              <Button
-                onClick={handleLogin}
-                size={"lg"}
-                className="flex cursor-pointer items-center gap-3 rounded-full px-0 py-4"
-              >
-                <span>Login</span>
-                <LogInIcon />
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button>
+                    <span>Login</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent showCloseButton={false}>
+                  <LoginModal handleGoogleLogin={handleGoogleLogin} />
+                </DialogContent>
+              </Dialog>
             </div>
           )}
 
