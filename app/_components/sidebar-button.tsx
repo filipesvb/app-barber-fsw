@@ -1,13 +1,7 @@
 "use client";
 
 import { Avatar, AvatarImage } from "@/app/_components/ui/avatar";
-import {
-  MenuIcon,
-  LogInIcon,
-  HomeIcon,
-  CalendarIcon,
-  LogOutIcon,
-} from "lucide-react";
+import { MenuIcon, HomeIcon, CalendarIcon, LogOutIcon } from "lucide-react";
 import categorias from "../_constants/categorias";
 import Divider from "./Divider";
 import { Button } from "./ui/button";
@@ -20,21 +14,12 @@ import {
   SheetClose,
 } from "./ui/sheet";
 import { authClient } from "@/lib/auth-client";
-import { getAuthUrl } from "@/lib/get-auth-url";
 import Link from "next/link";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
-import Image from "next/image";
+import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import LoginModal from "./login-modal";
 
 const SidebarButton = () => {
   const { data: session } = authClient.useSession();
-
-  const handleGoogleLogin = () => {
-    authClient.signIn.social({
-      provider: "google",
-      callbackURL: getAuthUrl(),
-    });
-  };
 
   const handleLogout = () => {
     authClient.signOut();
@@ -88,7 +73,7 @@ const SidebarButton = () => {
                   </Button>
                 </DialogTrigger>
                 <DialogContent showCloseButton={false}>
-                  <LoginModal handleGoogleLogin={handleGoogleLogin} />
+                  <LoginModal />
                 </DialogContent>
               </Dialog>
             </div>

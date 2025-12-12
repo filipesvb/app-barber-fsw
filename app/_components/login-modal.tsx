@@ -1,12 +1,17 @@
+import { authClient } from "@/lib/auth-client";
 import { Button } from "./ui/button";
 import { DialogTitle } from "./ui/dialog";
 import Image from "next/image";
+import { getAuthUrl } from "@/lib/get-auth-url";
 
-const LoginModal = ({
-  handleGoogleLogin,
-}: {
-  handleGoogleLogin: () => void;
-}) => {
+const LoginModal = () => {
+  const handleGoogleLogin = () => {
+    authClient.signIn.social({
+      provider: "google",
+      callbackURL: getAuthUrl(),
+    });
+  };
+
   return (
     <div className="flex flex-col items-center justify-center space-y-3">
       <DialogTitle>Faça login</DialogTitle>

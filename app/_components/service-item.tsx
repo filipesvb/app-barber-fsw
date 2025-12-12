@@ -14,7 +14,7 @@ import {
 } from "./ui/sheet";
 import { Calendar } from "./ui/calendar";
 import { ptBR } from "date-fns/locale";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { format, set } from "date-fns";
 import {
   Barbershop,
@@ -25,8 +25,9 @@ import CreateBooking from "../_actions/create-booking";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import GetBookings from "../_actions/get-bookings";
-import { Skeleton } from "./ui/skeleton";
 import BookingsAvailableSkeleton from "./ui/bookings-available-skeleton";
+import { Dialog, DialogTrigger, DialogContent } from "./ui/dialog";
+import LoginModal from "./login-modal";
 
 const HORARIOS = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00"];
 
@@ -62,6 +63,7 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
   const [loadingBookingsAvailable, setLoadingBookingsAvailable] =
     useState(false);
   const [dayBookings, setDayBookings] = useState<Booking[]>([]);
+  const [openSheet, setOpenSheet] = useState(false);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -102,6 +104,7 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
 
   const handleSelectDate = (date: Date | undefined) => {
     setSelectedDate(date);
+    setSelectedTime(undefined);
   };
 
   const handleSelectTime = (time: string | undefined) => {
@@ -111,6 +114,10 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
   const resetDateAndTime = () => {
     setSelectedDate(undefined);
     setSelectedTime(undefined);
+  };
+
+  const handleOpenSheet = () => {
+    setOpenSheet(!openSheet);
   };
 
   const { data: session } = authClient.useSession();
@@ -132,7 +139,6 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
 
     try {
       if (process.env.NEXT_PUBLIC_IS_CODESPACES === "true") {
-        console.log("SELECTED_DATE:::::::::::::", selectedDate);
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_CODESPACE_URL}/api/createbooking`,
           {
@@ -190,12 +196,29 @@ const ServiceItem = ({ s, barbershop }: ServiceItemProps) => {
                 currency: "BRL",
               })}
             </span>
-            <Sheet onOpenChange={resetDateAndTime}>
-              <SheetTrigger asChild>
-                <Button variant="default" size="sm">
+            <Sheet
+              onOpenChange={() => {
+                resetDateAndTime();
+                setOpenSheet(false);
+              }}
+              open={openSheet}
+            >
+              {session?.user.id ? (
+                <Button variant="default" size="sm" onClick={handleOpenSheet}>
                   Agendar
                 </Button>
-              </SheetTrigger>
+              ) : (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="default" size="sm" onClick={console.log}>
+                      Agendar
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent showCloseButton={false}>
+                    <LoginModal />
+                  </DialogContent>
+                </Dialog>
+              )}
               <SheetContent className="gap-0 px-0">
                 <SheetHeader>
                   <SheetTitle>Agendar {s.name}</SheetTitle>
